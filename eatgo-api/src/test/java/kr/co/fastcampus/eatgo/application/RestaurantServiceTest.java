@@ -3,27 +3,66 @@ package kr.co.fastcampus.eatgo.application;
 import kr.co.fastcampus.eatgo.domain.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.given;
 
 public class RestaurantServiceTest {
 
     private RestaurantService restaurantService;
 
+    @Mock
     private RestaurantRepository restaurantRepository;
 
+    @Mock
     private MenuItemRepository menuItemRepository;
 
     @Before
     public void setUp(){
+        MockitoAnnotations.initMocks(this);
 
-        restaurantRepository = new RestaurantRepositoryImpl();
-        menuItemRepository = new MenuItemRepositoryImpl();
+        mockRestaurantRepository();
+        mockMenuItemRepository();
 
-        restaurantService = new RestaurantService(restaurantRepository, menuItemRepository);
+        restaurantService = new RestaurantService(
+                restaurantRepository, menuItemRepository);
+    }
+
+    private void mockRestaurantRepository() {
+        List<Restaurant> restaurants = new ArrayList<>();
+        Restaurant restaurant = Restaurant.builder()
+                .id(1004L)
+                .name("Bob zip")
+                .address("Seoul")
+                .build();
+
+        restaurants.add(restaurant);
+
+        given(restaurantRepository.findAll())
+                .willReturn(restaurants);
+
+        given(restaurantRepository.findById(1004L))
+                .willReturn(Optional.of(restaurant));
+
+
+    }
+
+    private void mockMenuItemRepository() {
+        List<MenuItem> menuItems = new ArrayList<>();
+        menuItems.add(MenuItem.builder()
+                .name("Kimchi")
+                .build());
+
+        given(menuItemRepository.findAllByRestaurantId(1004L))
+                .willReturn(menuItems);
     }
 
     @Test
@@ -44,4 +83,38 @@ public class RestaurantServiceTest {
         assertThat(menuItem.getName(), is("Kimchi"));
     }
 
+    @Test
+    public void addRestaurant(){
+        given(restaurantRepository.save(ArgumentMatchers.any())).will(invocation -> {
+            Restaurant restaurant = invocation.getArgument(0);
+            restaurant.setId(1234L);
+            return restaurant;
+        });
+
+        Restaurant restaurant = Restaurant.builder()
+                .name("BeRyong")
+                .address("Busan")
+                .build();
+
+        Restaurant created = restaurantService.addRestaurant(restaurant);
+
+        assertThat(created.getId(), is(1234L));
+    }
+
+    @Test
+    public void updateRestaurant() {
+        Restaurant restaurant = Restaurant.builder()
+                .id(1004L)
+                .name("Bob zip")
+                .address("Seoul")
+                .build();
+
+        given(restaurantRepository.findById(1004L))
+                .willReturn(Optional.of(restaurant));
+
+        Restaurant updated = restaurantService.updateRestaurant(1004L, "Sool zip", "Busan");
+
+        assertThat(updated.getName(), is("Sool zip"));
+        assertThat(updated.getAddress(), is("Busan"));
+    }
 }
