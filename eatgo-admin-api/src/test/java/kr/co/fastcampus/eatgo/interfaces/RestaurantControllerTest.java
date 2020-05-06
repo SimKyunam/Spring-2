@@ -2,6 +2,7 @@ package kr.co.fastcampus.eatgo.interfaces;
 
 import kr.co.fastcampus.eatgo.application.RestaurantService;
 import kr.co.fastcampus.eatgo.domain.*;
+import kr.co.fastcampus.eatgo.domain.MenuItem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,13 +66,13 @@ public class RestaurantControllerTest {
                 .name("Kimchi")
                 .build();
         restaurant.setMenuItems(Arrays.asList(menuItem));
-
         Review review = Review.builder()
                 .name("JOKER")
                 .score(5)
                 .description("Great!")
                 .build();
         restaurant.setReviews(Arrays.asList(review));
+
 
         given(restaurantService.getRestaurant(1004L)).willReturn(restaurant);
 

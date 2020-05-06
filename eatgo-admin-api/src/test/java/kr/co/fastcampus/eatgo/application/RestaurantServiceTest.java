@@ -1,11 +1,13 @@
 package kr.co.fastcampus.eatgo.application;
 
 import kr.co.fastcampus.eatgo.domain.*;
+import kr.co.fastcampus.eatgo.domain.MenuItem;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +44,7 @@ public class RestaurantServiceTest {
                 restaurantRepository, menuItemRepository, reviewRepository);
     }
 
+
     private void mockRestaurantRepository() {
         List<Restaurant> restaurants = new ArrayList<>();
         Restaurant restaurant = Restaurant.builder()
@@ -57,8 +60,6 @@ public class RestaurantServiceTest {
 
         given(restaurantRepository.findById(1004L))
                 .willReturn(Optional.of(restaurant));
-
-
     }
 
     private void mockMenuItemRepository() {
@@ -102,11 +103,9 @@ public class RestaurantServiceTest {
         assertThat(restaurant.getId(), is(1004L));
 
         MenuItem menuItem = restaurant.getMenuItems().get(0);
-
         assertThat(menuItem.getName(), is("Kimchi"));
 
         Review review = restaurant.getReviews().get(0);
-
         assertThat(review.getDescription(), is("Bad"));
     }
 
