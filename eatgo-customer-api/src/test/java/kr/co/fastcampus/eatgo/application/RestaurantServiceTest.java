@@ -2,8 +2,8 @@ package kr.co.fastcampus.eatgo.application;
 
 import kr.co.fastcampus.eatgo.application.RestaurantService;
 import kr.co.fastcampus.eatgo.domain.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -11,8 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +35,7 @@ public class RestaurantServiceTest {
     @Mock
     private ReviewRepository reviewRepository;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         MockitoAnnotations.initMocks(this);
 
@@ -90,7 +94,7 @@ public class RestaurantServiceTest {
 
         Restaurant restaurant = restaurants.get(0);
 
-        assertThat(restaurant.getId(), is(1004L));
+        assertThat(restaurant.getId()).isEqualTo(1004L);
     }
 
     @Test
@@ -100,20 +104,22 @@ public class RestaurantServiceTest {
         verify(menuItemRepository).findAllByRestaurantId(eq(1004L));
         verify(reviewRepository).findAllByRestaurantId(eq(1004L));
 
-        assertThat(restaurant.getId(), is(1004L));
+        assertThat(restaurant.getId()).isEqualTo(1004L);
 
         MenuItem menuItem = restaurant.getMenuItems().get(0);
 
-        assertThat(menuItem.getName(), is("Kimchi"));
+        assertThat(menuItem.getName()).isEqualTo("Kimchi");
 
         Review review = restaurant.getReviews().get(0);
 
-        assertThat(review.getDescription(), is("Bad"));
+        assertThat(review.getDescription()).isEqualTo("Bad");
     }
 
-    @Test(expected = RestaurantNotFoundException.class)
+    @Test
     public void getRestaurantWithNotExisted(){
-        restaurantService.getRestaurant(404L);
+        assertThatThrownBy(() -> {
+            restaurantService.getRestaurant(404L);
+        }).isInstanceOf(RestaurantNotFoundException.class);
     }
 
     @Test
@@ -131,7 +137,7 @@ public class RestaurantServiceTest {
 
         Restaurant created = restaurantService.addRestaurant(restaurant);
 
-        assertThat(created.getId(), is(1234L));
+        assertThat(created.getId()).isEqualTo(1234L);
     }
 
     @Test
@@ -147,7 +153,7 @@ public class RestaurantServiceTest {
 
         Restaurant updated = restaurantService.updateRestaurant(1004L, "Sool zip", "Busan");
 
-        assertThat(updated.getName(), is("Sool zip"));
-        assertThat(updated.getAddress(), is("Busan"));
+        assertThat(updated.getName()).isEqualTo("Sool zip");
+        assertThat(updated.getAddress()).isEqualTo("Busan");
     }
 }
