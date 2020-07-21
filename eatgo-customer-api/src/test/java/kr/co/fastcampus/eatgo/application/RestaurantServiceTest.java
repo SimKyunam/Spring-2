@@ -1,6 +1,5 @@
 package kr.co.fastcampus.eatgo.application;
 
-import kr.co.fastcampus.eatgo.application.RestaurantService;
 import kr.co.fastcampus.eatgo.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import static org.mockito.BDDMockito.given;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 public class RestaurantServiceTest {
@@ -51,13 +49,15 @@ public class RestaurantServiceTest {
         List<Restaurant> restaurants = new ArrayList<>();
         Restaurant restaurant = Restaurant.builder()
                 .id(1004L)
+                .categoryId(1L)
                 .name("Bob zip")
                 .address("Seoul")
                 .build();
 
         restaurants.add(restaurant);
 
-        given(restaurantRepository.findAll())
+        given(restaurantRepository.findAllByAddressContainingAndCategoryId(
+                "Seoul", 1L))
                 .willReturn(restaurants);
 
         given(restaurantRepository.findById(1004L))
@@ -90,7 +90,9 @@ public class RestaurantServiceTest {
 
     @Test
     public void getRestaurants(){
-        List<Restaurant> restaurants = restaurantService.getRestaurants();
+        String region = "Seoul";
+
+        List<Restaurant> restaurants = restaurantService.getRestaurants(region, 1L);
 
         Restaurant restaurant = restaurants.get(0);
 

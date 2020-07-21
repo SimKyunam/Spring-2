@@ -40,12 +40,15 @@ public class RestaurantControllerTest {
         List<Restaurant> restaurants = new ArrayList<>();
         restaurants.add(Restaurant.builder()
                 .id(1004L)
+                .categoryId(1L)
                 .name("Bob zip")
                 .address("Seoul")
                 .build());
-        given(restaurantService.getRestaurants()).willReturn(restaurants);
 
-        mvc.perform(get("/restaurants"))
+        given(restaurantService.getRestaurants("Seoul", 1L))
+                .willReturn(restaurants);
+
+        mvc.perform(get("/restaurants?region=Seoul&category=1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         containsString("\"id\":1004")
@@ -96,6 +99,7 @@ public class RestaurantControllerTest {
     public void detailWithNotExisted() throws Exception {
         given(restaurantService.getRestaurant(404L))
                 .willThrow(new RestaurantNotFoundException(404L));
+
         mvc.perform(get("/restaurants/404"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("{}"));
