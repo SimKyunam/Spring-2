@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CategoryController.class)
-public class CategoryControllerTest {
+public class CategoryControllerTests {
 
     @Autowired
     private MockMvc mvc;

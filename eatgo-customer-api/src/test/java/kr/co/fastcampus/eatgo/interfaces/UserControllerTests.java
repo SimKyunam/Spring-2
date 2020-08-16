@@ -1,7 +1,9 @@
 package kr.co.fastcampus.eatgo.interfaces;
 
 import kr.co.fastcampus.eatgo.application.ReviewService;
+import kr.co.fastcampus.eatgo.application.UserService;
 import kr.co.fastcampus.eatgo.domain.Review;
+import kr.co.fastcampus.eatgo.domain.User;
 import kr.co.fastcampus.eatgo.interfaces.ReviewController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,37 +24,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(ReviewController.class)
-public class ReviewControllerTest {
+@WebMvcTest(UserController.class)
+public class UserControllerTests {
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private ReviewService reviewService;
+    private UserService userService;
 
     @Test
-    public void createWithValidAttributes() throws Exception {
-        given(reviewService.addReview(eq(1L), any())).willReturn(
-                Review.builder().id(1004L).build());
+    public void create() throws Exception {
+        User mockUser = User.builder()
+                .id(1004L)
+                .email("tester@example.com")
+                .name("Tester")
+                .password("test")
+                .build();
 
-        mvc.perform(post("/restaurants/1/reviews")
+        given(userService.registerUser("tester@example.com", "Tester", "test"))
+                .willReturn(mockUser);
+
+        mvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"JOKER\",\"score\":3,\"description\":\"Good\"}"))
+                .content("{\"email\":\"tester@example.com\",\"name\":\"Tester\",\"password\":\"test\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("location", "/restaurants/1/reviews/1004"));
+                .andExpect(header().string("location", "/users/1004"));
 
-        verify(reviewService).addReview(eq(1L), any());
+        verify(userService).registerUser(
+                eq("tester@example.com"), eq("Tester"), eq("test"));
     }
-
-    @Test
-    public void createWithInValidAttributes() throws Exception {
-        mvc.perform(post("/restaurants/1/reviews")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
-                .andExpect(status().isBadRequest());
-
-        verify(reviewService, never()).addReview(eq(1L), any());
-    }
-
 }
